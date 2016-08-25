@@ -1,10 +1,15 @@
 <?php
 /**
  * Setup custom post types.
+ *
+ * @package Superiocity\CVC
  */
 
 namespace Superiocity\CVC;
 
+/**
+ * Class Posttypes Register and hook post types and related messages.
+ */
 class Posttypes {
 
 	/**
@@ -20,8 +25,8 @@ class Posttypes {
 	 * Initialize the 'proejct' post type.
 	 */
 	public function posttype_project_init() {
-		register_post_type( 'project', array (
-			'labels'                => array (
+		register_post_type( 'project', array(
+			'labels' => array(
 				'name'               => __( 'Projects', TEXT_DOMAIN ),
 				'singular_name'      => __( 'Project', TEXT_DOMAIN ),
 				'all_items'          => __( 'All Projects', TEXT_DOMAIN ),
@@ -32,8 +37,7 @@ class Posttypes {
 				'view_item'          => __( 'View project', TEXT_DOMAIN ),
 				'search_items'       => __( 'Search projects', TEXT_DOMAIN ),
 				'not_found'          => __( 'No projects found', TEXT_DOMAIN ),
-				'not_found_in_trash' => __( 'No projects found in trash',
-					TEXT_DOMAIN ),
+				'not_found_in_trash' => __( 'No projects found in trash', TEXT_DOMAIN ),
 				'parent_item_colon'  => __( 'Parent project', TEXT_DOMAIN ),
 				'menu_name'          => __( 'Projects', TEXT_DOMAIN ),
 			),
@@ -41,12 +45,12 @@ class Posttypes {
 			'hierarchical'          => false,
 			'show_ui'               => true,
 			'show_in_nav_menus'     => true,
-			'supports'              => array (
+			'supports'              => array(
 				'title',
 				'editor',
 				'thumbnail',
 				'excerpt',
-				'revisions'
+				'revisions',
 			),
 			'has_archive'           => true,
 			'rewrite'               => true,
@@ -62,7 +66,7 @@ class Posttypes {
 	/**
 	 * Configure the messages associated with the 'project' post type.
 	 *
-	 * @param array $messages
+	 * @param array $messages Default messages array.
 	 *
 	 * @return array
 	 */
@@ -71,7 +75,7 @@ class Posttypes {
 
 		$permalink = get_permalink( $post );
 
-		$messages['project'] = array (
+		$messages['project'] = array(
 			0  => '', // Unused. Messages start at index 1.
 			1  => sprintf( __( 'Project updated. <a target="_blank" href="%s">View project</a>',
 				TEXT_DOMAIN ), esc_url( $permalink ) ),
