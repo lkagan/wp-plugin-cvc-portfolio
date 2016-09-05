@@ -8,15 +8,14 @@
 namespace Superiocity\CVC;
 
 /**
- * Class Posttypes Register and hook post types and related messages.
+ * Register and hook post types and related messages.
  */
-class Posttypes {
+class Posttype {
 
 	/**
-	 * Posttypes constructor sets up hooks.
+	 * Posttype constructor sets up hooks.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'posttype_project_init' ) );
 		add_filter( 'post_updated_messages', array( $this, 'posttype_project_messages' ) );
 	}
 
@@ -24,7 +23,7 @@ class Posttypes {
 	/**
 	 * Initialize the 'proejct' post type.
 	 */
-	public function posttype_project_init() {
+	public function project_init() {
 		register_post_type( 'project', array(
 			'labels' => array(
 				'name'               => __( 'Projects', TEXT_DOMAIN ),
@@ -41,19 +40,20 @@ class Posttypes {
 				'parent_item_colon'  => __( 'Parent project', TEXT_DOMAIN ),
 				'menu_name'          => __( 'Projects', TEXT_DOMAIN ),
 			),
-			'public'                => false,
+			'public'                => true,
 			'hierarchical'          => false,
 			'show_ui'               => true,
 			'show_in_nav_menus'     => true,
 			'supports'              => array(
 				'title',
 				'editor',
-				'thumbnail',
 				'excerpt',
 				'revisions',
 			),
-			'has_archive'           => true,
-			'rewrite'               => true,
+			'has_archive'           => false,
+			'rewrite'               => array(
+				'slug'              => 'portfolio',
+			),
 			'query_var'             => true,
 			'menu_icon'             => 'dashicons-building',
 			'show_in_rest'          => true,
