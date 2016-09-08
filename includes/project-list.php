@@ -1,45 +1,38 @@
 <?php
 /* @var \WP_Query $project_query */
-if ( $project_query->have_posts() ) :
+if ( $photo_projects->have_posts() ) : ?>
+<div class="portfolio">
+	<div class="projects with-photos">
+		<?php while ( $photo_projects->have_posts() ) :
+			$photo_projects->the_post();
+			$photos = get_field( 'photos' );
+			?>
+			<a href="<?php the_permalink() ?>">
+				<div class="project">
+					<h4 class="title"><?php echo $this->get_title_formatted() ; ?></h4>
+					<img src="<?php echo $photos[0]['sizes']['medium-square'] ?>">
+					<?php if ( $excerpt = get_the_excerpt() ) : ?>
+						<div class="excerpt"><?php echo $excerpt; ?></div>
+					<?php endif; ?>
+				</div>
+			</a>
+		<?php endwhile; ?>
+	</div><!-- .projects .with-photos -->
 
-	?><h2>Projects w/ Photos</h2><?php
-	// Traverse and output projects that have photos.
-	while ( $project_query->have_posts() ) : $project_query->the_post();
-
-		// Skip if no images are associated with the project.
-		if ( ! $photos = get_field( 'photos' ) ) {
-			continue;
-		}
-
-		?>
-		<a href="<?php echo the_permalink() ?>">
-			<div class="project">
-				<h4 class="title"><?php the_title(); ?></h4>
-				<img src="<?php echo $photos[0]['sizes']['medium-square'] ?>">
-				<div class="excerpt"><?php the_excerpt(); ?></div>
-			</div>
-		</a>
-	<?php endwhile;
-
-	$project_query->rewind_posts();
-
-	?><h2>Other Projects</h2><?php
-	// Traverse and output projects with NO photos
-	?><ul class="other-projects"><?php
-	while ( $project_query->have_posts() ) :
-		$project_query->the_post();
-
-		// Skip if images DO exist.
-		if ( get_field( 'photos' ) ) {
-			continue;
-		}
-
-		?> <li><span class="title"><?php the_title(); ?></span>
-		<?php echo ( get_field( 'type' ) ) ? '- <span class="type">' .  get_field( 'type' ) . '</span>' : ''; ?>
-
-	<?php endwhile;
-	?><ul><?php
-
-	wp_reset_postdata();
-wp_reset_query();
-endif;
+	<div class="projects no-photos">
+		<h2>More Projects</h2>
+		<div class="list-wrapper">
+			<ul>
+			<?php while ( $projects->have_posts() ) :
+				$projects->the_post();
+				?> <li><span class="title"><?php echo $this->get_title_formatted() ?></span></li>
+			<?php endwhile; ?>
+			</ul>
+		</div><!-- .list-wrapper -->
+	</div><!-- .projects.no-photos -->
+	<?php
+		wp_reset_postdata();
+		wp_reset_query();
+	?>
+</div><!-- .portfolio -->
+<?php endif;

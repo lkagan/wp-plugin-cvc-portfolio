@@ -39,12 +39,34 @@ class Portfolio
 
 		add_action( 'plugins_loaded', array( $this, 'check_for_acf' ) );
 		add_action( 'init', array( $this->posttypes, 'project_init' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts_styles' ) );
 		add_shortcode( 'cvc_portfolio', array( $this, 'list_projects' ) );
 		add_filter( 'excerpt_length', array( $this, 'change_excerpt_length' ) );
 		add_filter( 'excerpt_more', array( $this, 'change_excerpt_more' ) );
+		add_filter( 'manage_edit-project_columns', array( $this->posttypes, 'add_admin_column_headers' ) );
+		add_action( 'manage_posts_custom_column', array( $this->posttypes, 'add_admin_column_data' ) );
+		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
 		add_image_size( 'medium-square', 300, 300, true );
+	}
+
+
+	/**
+	 * Enqueue the CSS and JS.
+	 */
+	public function load_scripts_styles() {
+		$css_filename = 'style.css';
+		$css_url = plugin_dir_url( __FILE__ ) . $css_filename;
+		$css_path = plugin_dir_path( __FILE__ ) . $css_filename;
+		$css_modified = filemtime( $css_path );
+		wp_enqueue_style( 'cvc-portfolio', $css_url, null, $css_modified );
+
+		$js_filename = '/js/main.min.js';
+		$js_url = plugin_dir_url( __FILE__ ) . $js_filename;
+		$js_path = plugin_dir_path( __FILE__ ) . $js_filename;
+		$js_modified = filemtime( $js_path );
+		wp_enqueue_script( 'cvc-portfolio', $js_url, null, $js_modified );
 	}
 
 
@@ -69,7 +91,7 @@ class Portfolio
 	 * @return int
 	 */
 	public function change_excerpt_length( int $length ) : int {
-		return 'project' === $GLOBALS['post']->post_type ? 25 : $length;
+		return 'project' === $GLOBALS['post']->post_type ? 15 : $length;
 	}
 
 
@@ -80,9 +102,59 @@ class Portfolio
 	 */
 	public function list_projects() : string {
 		ob_start();
-		$project_query = new \WP_Query( array( 'post_type' => 'project' ) );
+		$photo_projects = new \WP_Query( array(
+			'post_type'      => 'project',
+			'posts_per_page' => - 1,
+			'orderby'        => 'title',
+			'order'          => 'asc',
+			'meta_query'     => array (
+				array(
+					'key'           => 'photos',
+					'value'         => '',
+					'compare'       => '!=',
+				),
+			),
+		) );
+
+		$projects = new \WP_Query( array(
+			'post_type'      => 'project',
+			'posts_per_page' => - 1,
+			'orderby'        => 'title',
+			'order'          => 'asc',
+			'meta_query'     => array (
+				array(
+					'key'           => 'photos',
+					'value'         => '',
+					'compare'       => '=',
+				),
+			),
+		) );
+
 		include 'includes/project-list.php';
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Return a title for the project.
+	 *
+	 * @return string
+	 */
+	protected function get_title_formatted() : string {
+		global $post;
+		$location = esc_html( get_field( 'city' ) );
+		$state = esc_html( get_field( 'state' ) );
+		$title = esc_html( get_the_title( $post->ID ) );
+		$title .= get_field( 'type' ) ? ' ' . esc_html( get_field( 'type' ) ) : '';
+
+		if ( ! empty( $location ) || ! empty( $state ) ) {
+			$title .= '<span class="location">';
+			$title .= $location ? ' - ' . $location : '';
+			$title .= $state ? ', ' . substr( $state , 0, 2 ) : '';
+			$title .= '</span>';
+		}
+
+		return $title;
 	}
 
 
@@ -115,6 +187,7 @@ class Portfolio
 	 * Handle activation setup.
 	 */
 	public function activation() {
+		remove_action( 'init', array( $this->posttypes, 'project_init' ) );
 		$this->posttypes->project_init();
 		flush_rewrite_rules();
 	}
