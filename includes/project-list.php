@@ -20,7 +20,7 @@ if ( $photo_projects->have_posts() ) : ?>
 	</div><!-- .projects .with-photos -->
 
 	<div class="projects no-photos">
-		<h2>More Projects</h2>
+		<h2>Projects</h2>
 		<div class="list-wrapper">
 			<ul>
 			<?php while ( $projects->have_posts() ) :
@@ -28,6 +28,7 @@ if ( $photo_projects->have_posts() ) : ?>
 				?> <li><span class="title"><?php echo $this->get_title_formatted() ?></span></li>
 			<?php endwhile; ?>
 			</ul>
+			<a class="button" href="javascript:void(0);" id="see-all-projects">See all projects</a>
 		</div><!-- .list-wrapper -->
 	</div><!-- .projects.no-photos -->
 	<?php
