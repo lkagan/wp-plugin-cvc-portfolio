@@ -8,7 +8,8 @@
         // View all projects in list on portfolio page.
         var see_all_link = document.getElementById('see-all-projects');
         if ( see_all_link ) {
-            see_all_link.addEventListener( 'click', function() {
+            see_all_link.addEventListener( 'click', function(e) {
+                e.preventDefault();
                 document.querySelector( '.portfolio .list-wrapper' ).style.height = '100%';
                 see_all_link.style.display = 'none';
                 return false;

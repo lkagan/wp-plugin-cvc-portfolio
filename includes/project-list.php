@@ -28,7 +28,7 @@ if ( $photo_projects->have_posts() ) : ?>
 				?> <li><span class="title"><?php echo $this->get_title_formatted() ?></span></li>
 			<?php endwhile; ?>
 			</ul>
-			<a class="button" href="javascript:void(0);" id="see-all-projects">See all projects</a>
+			<a class="button" href="#" id="see-all-projects">See all projects</a>
 		</div><!-- .list-wrapper -->
 	</div><!-- .projects.no-photos -->
 	<?php

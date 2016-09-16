@@ -30,7 +30,6 @@ class Portfolio
 	 */
 	protected $posttypes;
 
-
 	/**
 	 * Portfolio constructor.
 	 */
@@ -44,6 +43,7 @@ class Portfolio
 		add_filter( 'excerpt_length', array( $this, 'change_excerpt_length' ) );
 		add_filter( 'excerpt_more', array( $this, 'change_excerpt_more' ) );
 		add_filter( 'manage_edit-project_columns', array( $this->posttypes, 'add_admin_column_headers' ) );
+		add_filter( 'the_content', array( $this, 'append_gallery' ) );
 		add_action( 'manage_posts_custom_column', array( $this->posttypes, 'add_admin_column_data' ) );
 		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 		register_activation_hook( __FILE__, array( $this, 'activation' ) );
@@ -177,10 +177,14 @@ class Portfolio
 	 * Display an admin dashboard notification of missing ACF plugin.
 	 */
 	public function trigger_notify_no_acf() {
-		$msg = ' requires that the Advanced Custom Fields Pro 
-		       plugin be installed and activated.';
+		$msg = ' requires that the Advanced Custom Fields Pro ' .
+		       'plugin be installed and activated.';
 		$msg = get_plugin_data( __FILE__ )['Name'] . esc_html__( $msg, TEXT_DOMAIN );
-		?><div class="notice notice-error"><p><?php echo $msg ?></p></div><?php
+
+		if ( is_admin() ) {
+			?><div class="notice notice-error"><p><?php echo $msg ?></p></div><?php
+		}
+		trigger_error( $msg );
 	}
 
 	/**
@@ -198,6 +202,29 @@ class Portfolio
 	 */
 	public function deactivation() {
 		flush_rewrite_rules();
+	}
+
+
+	/**
+	 * Append the gallery to project posts that have images.
+	 *
+	 * @param string $content Orginal content of post.
+	 *
+	 * @return string Updated content of post.
+	 */
+	public function append_gallery( string $content ) : string {
+
+		// Only do work if the post type is a 'project' and we're on a single post.
+		if ( ! ( is_single() && 'project' === $GLOBALS['post']->post_type ) ) {
+			return $content;
+		}
+
+		// Grab images associated with project.
+		$images = get_field( 'photos' );
+		ob_start();
+		include 'includes/gallery.php';
+		$gallery = ob_get_clean();
+		return $content . $gallery;
 	}
 }
 
