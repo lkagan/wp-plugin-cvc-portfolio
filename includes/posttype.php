@@ -8,15 +8,14 @@
 namespace Superiocity\CVC;
 
 /**
- * Class Posttypes Register and hook post types and related messages.
+ * Register and hook post types and related messages.
  */
-class Posttypes {
+class Posttype {
 
 	/**
-	 * Posttypes constructor sets up hooks.
+	 * Posttype constructor sets up hooks.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'posttype_project_init' ) );
 		add_filter( 'post_updated_messages', array( $this, 'posttype_project_messages' ) );
 	}
 
@@ -24,42 +23,45 @@ class Posttypes {
 	/**
 	 * Initialize the 'proejct' post type.
 	 */
-	public function posttype_project_init() {
+	public function project_init() {
+		// @codingStandardsIgnoreStart
 		register_post_type( 'project', array(
 			'labels' => array(
-				'name'               => __( 'Projects', TEXT_DOMAIN ),
+				'name'               => __( 'Portfolio', TEXT_DOMAIN ),
 				'singular_name'      => __( 'Project', TEXT_DOMAIN ),
 				'all_items'          => __( 'All Projects', TEXT_DOMAIN ),
-				'new_item'           => __( 'New project', TEXT_DOMAIN ),
-				'add_new'            => __( 'Add New', TEXT_DOMAIN ),
-				'add_new_item'       => __( 'Add New project', TEXT_DOMAIN ),
-				'edit_item'          => __( 'Edit project', TEXT_DOMAIN ),
-				'view_item'          => __( 'View project', TEXT_DOMAIN ),
-				'search_items'       => __( 'Search projects', TEXT_DOMAIN ),
-				'not_found'          => __( 'No projects found', TEXT_DOMAIN ),
-				'not_found_in_trash' => __( 'No projects found in trash', TEXT_DOMAIN ),
-				'parent_item_colon'  => __( 'Parent project', TEXT_DOMAIN ),
-				'menu_name'          => __( 'Projects', TEXT_DOMAIN ),
+				'new_item'           => __( 'New Project', TEXT_DOMAIN ),
+				'add_new'            => __( 'Add New Project', TEXT_DOMAIN ),
+				'add_new_item'       => __( 'Add New Project', TEXT_DOMAIN ),
+				'edit_item'          => __( 'Edit Project', TEXT_DOMAIN ),
+				'view_item'          => __( 'View Project', TEXT_DOMAIN ),
+				'search_items'       => __( 'Search Projects', TEXT_DOMAIN ),
+				'not_found'          => __( 'No Projects Found', TEXT_DOMAIN ),
+				'not_found_in_trash' => __( 'No Projects Found In Trash', TEXT_DOMAIN ),
+				'parent_item_colon'  => __( 'Parent Project', TEXT_DOMAIN ),
+				'menu_name'          => __( 'Portfolio', TEXT_DOMAIN ),
 			),
-			'public'                => false,
+			'public'                => true,
 			'hierarchical'          => false,
 			'show_ui'               => true,
 			'show_in_nav_menus'     => true,
 			'supports'              => array(
 				'title',
 				'editor',
-				'thumbnail',
 				'excerpt',
 				'revisions',
 			),
-			'has_archive'           => true,
-			'rewrite'               => true,
+			'has_archive'           => false,
+			'rewrite'               => array(
+				'slug'              => 'portfolio',
+			),
 			'query_var'             => true,
 			'menu_icon'             => 'dashicons-building',
 			'show_in_rest'          => true,
 			'rest_base'             => 'project',
 			'rest_controller_class' => 'WP_REST_Posts_Controller',
 		) );
+		// @codingStandardsIgnoreStart
 	}
 
 
@@ -75,6 +77,7 @@ class Posttypes {
 
 		$permalink = get_permalink( $post );
 
+		// @codingStandardsIgnoreStart
 		$messages['project'] = array(
 			0  => '', // Unused. Messages start at index 1.
 			1  => sprintf( __( 'Project updated. <a target="_blank" href="%s">View project</a>',
@@ -103,7 +106,48 @@ class Posttypes {
 				TEXT_DOMAIN ),
 				esc_url( add_query_arg( 'preview', 'true', $permalink ) ) ),
 		);
+		// @codingStandardsIgnoreEnd
 
 		return $messages;
+	}
+
+
+	/**
+	 * Add a column heading to the admin page.
+	 *
+	 * @param array $columns Original columns.
+	 *
+	 * @return array
+	 */
+	public function add_admin_column_headers( array $columns ) : array {
+		return [
+			'cb'        => $columns['cb'],
+			'title'     => $columns['title'],
+			'city'      => 'Location',
+			'state'     => 'State',
+			'type'      => 'Type',
+			'gallery'   => 'Has Gallery',
+		];
+	}
+
+
+	/**
+	 * Load data into the admin column.
+	 *
+	 * @param string $column Current column.
+	 */
+	public function add_admin_column_data( string $column ) {
+		switch ( $column ) {
+			case 'city':
+			case 'state':
+			case 'type':
+				$data = get_field( $column, $GLOBALS['post']->ID );
+				break;
+			case 'gallery' :
+				$data = get_field( 'photos' ) ? 'yes' : 'no';
+				break;
+		}
+
+		echo esc_html( $data );
 	}
 }
