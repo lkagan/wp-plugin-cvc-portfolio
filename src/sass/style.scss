@@ -43,7 +43,7 @@
 
     .excerpt {
       padding: .5em;
-      background: rgba(0,0,0, .5);
+      background: rgba(0,0,0, .7);
       color: #ddd;
       font-family: helvetica, Arial, sans-serif;
       position: absolute;
@@ -55,6 +55,10 @@
 
     a:hover .excerpt {
       transform: translateY(-100%);
+    }
+
+    .has-touch & a:hover .excerpt {
+      transform: none;
     }
 
     .more {
@@ -79,6 +83,7 @@
   }
 
   .projects.no-photos {
+    margin-top: 2em;
     width: 100%;
     display: block;
     padding: 0 4px 0 0;
@@ -148,7 +153,7 @@
       position: relative;
       overflow: hidden;
       padding: 1px 4px 4px 1px;
-      height: 660px;
+      height: 630px;
     }
 
     .projects.no-photos {
@@ -177,7 +182,7 @@
     }
 
     .list-wrapper {
-        height: 810px;
+        height: 780px;
     }
   }
 }
@@ -224,5 +229,28 @@
 
   a:hover .overlay {
     transform: translateY(-100%);
+  }
+
+  .has-touch & .overlay {
+    width: 70%;
+    height: 70%;
+    right: 0;
+    bottom: 0;
+    transform: rotate(45deg) translateX(70%);
+    transform-origin: 50% 50%;
+    transition: none;
+  }
+
+  .has-touch & .fa-search {
+    top: 33%;
+    left: 1em;
+    font-size: 1rem;
+    position: absolute;
+    transform: rotate(-45deg);
+    transform-origin: 100% 100%;
+  }
+
+  .has-touch & a:hover .overlay {
+    transform: rotate(45deg) translateX(70%);
   }
 }
