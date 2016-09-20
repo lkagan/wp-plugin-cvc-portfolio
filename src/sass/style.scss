@@ -221,7 +221,7 @@
     transition: transform .25s;
   }
 
-  .fa-search {
+  .fa-search-plus {
     top: 50%;
     position: relative;
     transform: translateY(-50%);
@@ -241,7 +241,7 @@
     transition: none;
   }
 
-  .has-touch & .fa-search {
+  .has-touch & .fa-search-plus {
     top: 33%;
     left: 1em;
     font-size: 1rem;
