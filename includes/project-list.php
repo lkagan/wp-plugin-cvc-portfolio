@@ -20,7 +20,7 @@ if ( $photo_projects->have_posts() ) : ?>
 	</div><!-- .projects .with-photos -->
 
 	<div class="projects no-photos">
-		<h2>Projects</h2>
+		<h2>Recent Projects</h2>
 		<div class="list-wrapper">
 			<ul>
 			<?php while ( $projects->have_posts() ) :
